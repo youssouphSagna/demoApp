@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import * as uuid from 'uuid';
-import {FormBuilder} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -11,14 +11,12 @@ import {FormBuilder} from '@angular/forms';
 export class AppComponent implements OnInit {
   title = 'demoApp';
   users = [];
-  firstname: string;
-  lastname: string;
   headers = new HttpHeaders({
     Accept: '*/*'
   });
   userForm = this.formBuilder.group({
-    firstname: '',
-    lastname: ''
+    firstname: ['', Validators.required],
+    lastname: ['', Validators.required]
   });
   constructor(private http: HttpClient, private formBuilder: FormBuilder) {
   }
@@ -42,12 +40,15 @@ export class AppComponent implements OnInit {
       firstname: this.userForm.value.firstname,
       lastname: this.userForm.value.firstname
     };
-    this.http.post('https://j5fucbk7qg.execute-api.eu-west-2.amazonaws.com/post', body, {headers: this.headers}).subscribe(() => {
-      this.getUsers();
-      this.userForm.reset();
-    }, err => {
-      console.log(err.message);
-    });
+
+    if (body.firstname && body.lastname) {
+      this.http.post('https://j5fucbk7qg.execute-api.eu-west-2.amazonaws.com/post', body, {headers: this.headers}).subscribe(() => {
+        this.getUsers();
+        this.userForm.reset();
+      }, err => {
+        console.log(err.message);
+      });
+    }
   }
 
 }
